@@ -6,8 +6,8 @@ name = "pypi"
 [packages]
 fastapi = "*"
 python-multipart = "*"
-uvicorn = "*"
 dashscope = "*"
+uvicorn = "*"
 
 [dev-packages]
 uvicorn = "*"
