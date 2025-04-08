@@ -5,5 +5,3 @@ class RagContractReviewRequest(BaseModel):
 
 class RagContractReviewResponse(BaseModel):
     text: str
-    input_tokens: int
-    output_tokens: int
