@@ -8,6 +8,8 @@ fastapi = "*"
 python-multipart = "*"
 dashscope = "*"
 uvicorn = "*"
+pymupdf = "*"
+python-docx = "*"
 
 [dev-packages]
 uvicorn = "*"
