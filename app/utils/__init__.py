@@ -1,0 +1,1 @@
+from .file.file_extract import extract_text_from_docx, extract_text_from_pdf
