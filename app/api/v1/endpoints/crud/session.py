@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services import session as session_service
-from app.schemas import SessionCreate, SessionOut
+from app.schemas import SessionCreate, SessionUpdate ,SessionOut
 from typing import List
 
 router = APIRouter(prefix="/session", tags=["session接口"])
@@ -21,6 +21,13 @@ def get_session(session_id: int, db: Session = Depends(get_db)):
 @router.get("/user/{user_id}", summary="获取用户会话列表", response_model=List[SessionOut])
 def list_sessions(user_id: int, db: Session = Depends(get_db)):
     return session_service.list_sessions_by_user(db, user_id)
+
+@router.put("/{session_id}/{user_id}", summary="更新session主题", response_model=SessionOut)
+def update_session(session_id: int, user_id: int, payload: SessionUpdate, db: Session = Depends(get_db)):
+    session = session_service.update_session(db, user_id, session_id, payload)
+    if not session:
+        raise HTTPException(404, detail="session不存在")
+    return session
 
 @router.delete("/{session_id}", summary="删除会话")
 def delete_session(session_id: int, db: Session = Depends(get_db)):

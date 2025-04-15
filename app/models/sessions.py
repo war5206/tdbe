@@ -4,11 +4,12 @@ from app.models.base import Base, UserRole, MessageType
 class ChatSessions(Base):
     __tablename__ = 'chat_sessions'
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey('users_login.id'))
+    user_id = Column(BigInteger, ForeignKey('users.id'))
     agent_id = Column(BigInteger, ForeignKey('agents.id'))
     document_ids = Column(String(100))
     title = Column(String(100))
     created_at = Column(DateTime)
+    updated_at = Column(DateTime)
     is_deleted = Column(Boolean, default=False)
 
 class ChatMessages(Base):

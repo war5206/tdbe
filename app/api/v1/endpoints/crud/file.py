@@ -18,9 +18,9 @@ def get_file(file_id: int, db: Session = Depends(get_db)):
         raise HTTPException(404, detail="文件不存在")
     return file
 
-@router.get("/agent/{agent_id}", summary="获取Agent文件列表", response_model=List[FileOut])
-def list_files(agent_id: int, db: Session = Depends(get_db)):
-    return file_service.list_files_by_agent(db, agent_id)
+# @router.get("/agent/{agent_id}", summary="获取Agent文件列表", response_model=List[FileOut])
+# def list_files(agent_id: int, db: Session = Depends(get_db)):
+#     return file_service.list_files_by_agent(db, agent_id)
 
 @router.delete("/{file_id}", summary="删除文件")
 def delete_file(file_id: int, db: Session = Depends(get_db)):

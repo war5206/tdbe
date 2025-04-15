@@ -1,12 +1,22 @@
 from datetime import datetime
 from sqlalchemy.orm import Session
 from app.models.users import UsersLogin
-from app.schemas import UserUpdate
+from app.schemas import UserCreate,UserUpdate
 import hashlib
 
-def create_user(db: Session, username: str, telephone: str, password: str):
+def create_user(db: Session, username: str, telephone: str, password: str, department_level1: str, department_level2: str, position: str):
     password = hashlib.sha256(password.encode()).hexdigest() # Hash the password
-    user = UsersLogin(username=username, telephone=telephone, password=password, created_at=datetime.now())
+    now = datetime.now()
+    user = UsersLogin(
+        username=username,
+        telephone=telephone,
+        password=password,
+        department_level1=department_level1,
+        department_level2=department_level2,
+        position=position,
+        created_at=now,
+        updated_at=now
+    )
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -22,6 +32,7 @@ def update_user(db: Session, user_id: int, payload: UserUpdate):
             if field == "password" and value:
                 value = hashlib.sha256(value.encode()).hexdigest()
             setattr(user, field, value)
+        user.updated_at = datetime.now()
         db.commit()
         db.refresh(user)
     return user

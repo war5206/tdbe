@@ -2,8 +2,15 @@ from sqlalchemy.orm import Session
 from app.models.files import Files
 from datetime import datetime
 
-def create_file(db: Session, name: str, file_path: str, agent_id: int, uploaded_by: int):
-    file = Files(name=name, file_path=file_path, agent_id=agent_id, uploaded_by=uploaded_by)
+def create_file(db: Session, name: str, file_path: str, agent_id: int, session_id: int, message_id: int, uploaded_by: int):
+    file = Files(
+        name=name,
+        file_path=file_path,
+        agent_id=agent_id,
+        session_id=session_id,
+        message_id=message_id,
+        uploaded_by=uploaded_by
+    )
     db.add(file)
     db.commit()
     db.refresh(file)
