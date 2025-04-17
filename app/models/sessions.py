@@ -20,6 +20,5 @@ class ChatMessages(Base):
     role = Column(Enum(UserRole))
     type = Column(Enum(MessageType))
     content = Column(Text)
-    reasoning_content = Column(Text)
     created_at = Column(DateTime)
     is_deleted = Column(Boolean, default=False)

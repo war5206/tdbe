@@ -8,7 +8,6 @@ class ChatMessageCreate(BaseModel):
     role: str  # 'user' | 'assistant'
     type: str  # 'message' | 'reasoning' | 'system'
     content: str
-    reasoning_content: Optional[str] = None
 
 class ChatMessageOut(ChatMessageCreate):
     id: int

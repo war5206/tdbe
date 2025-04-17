@@ -2,14 +2,13 @@ from sqlalchemy.orm import Session
 from app.models.sessions import ChatMessages
 from datetime import datetime
 
-def create_message(db: Session, session_id: int, message_index: int, role: str, type: str, content: str, reasoning_content: str = None):
+def create_message(db: Session, session_id: int, message_index: int, role: str, type: str, content: str):
     message = ChatMessages(
         session_id=session_id,
         message_index=message_index,
         role=role,
         type=type,
         content=content,
-        reasoning_content=reasoning_content,
         created_at=datetime.now(),
         is_deleted=False
     )

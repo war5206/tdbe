@@ -6,12 +6,13 @@ name = "pypi"
 [packages]
 fastapi = "*"
 python-multipart = "*"
-dashscope = "*"
 uvicorn = "*"
 pymupdf = "*"
 python-docx = "*"
 sqlalchemy = "*"
 pymysql = "*"
+dashscope = "*"
+cryptography = "*"
 
 [dev-packages]
 uvicorn = "*"
