@@ -1,8 +1,9 @@
-from http import HTTPStatus
 import json
+from http import HTTPStatus
 from dashscope import Application
 from app.schemas.aliyun import AliyunModelMsg
 
+# 思考流式输出
 def reasoning_stream_generator(
   contract_api_key: str, 
   app_id: str,
@@ -12,6 +13,8 @@ def reasoning_stream_generator(
 ):
     try:
         messages = [msg.model_dump() for msg in messages]
+
+        print("messages: ", messages)
 
         if debug:
             print("[思考]", "messages: ", messages)
@@ -29,6 +32,7 @@ def reasoning_stream_generator(
         )
 
         for chunk in responses:
+            print("chunk: ", chunk)
             # 检查状态码
             if chunk.status_code != HTTPStatus.OK:      
                 error_msg = f"Error: code={chunk.status_code}"

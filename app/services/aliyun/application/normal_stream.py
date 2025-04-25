@@ -1,46 +1,35 @@
+import json
 from http import HTTPStatus
 from dashscope import Application
+from app.schemas.aliyun import AliyunModelMsg
 
-def stream_generator(
+# 普通非流式输出
+def normal_stream_generator(
   contract_api_key: str, 
   app_id: str,
   pipeline_ids: list[str],
-  prompt: str
+  messages: list[AliyunModelMsg],
+  debug: bool = False
 ):
   try:
+      messages = [msg.model_dump() for msg in messages]
+
       responses = Application.call(
         api_key=contract_api_key, 
         app_id=app_id,
-        prompt=prompt,
+        messages=messages,
         rag_options={
           "pipeline_ids": pipeline_ids,
-        },
-        stream=True
+        }
       )
-    
-      last_response = "" #用于记录上一次完整输出
-      for chunk in responses:
-          if chunk.status_code != HTTPStatus.OK:      
-              error_msg = (
-                f"Error: code={chunk.status_code}, "
-                f"msg={chunk.message}, request_id={chunk.request_id}\n"
-              )
-              print('[接口错误] >>>', error_msg)
-              # print(f'请参考文档：https://help.aliyun.com/zh/model-studio/developer-reference/error-code')
-              yield error_msg
-              break
-          if chunk.output and chunk.output.text:
-              current = chunk.output.text
-              print('[接口返回] >>>', current)
-
-              # 计算新增部分
-              if current.startswith(last_response):
-                  delta = current[len(last_response):]
-              else:
-                  delta = current  # fallback，某些异常情况
-              last_response = current  # 更新历史
-              yield delta
+      if responses.status_code != HTTPStatus.OK:
+          error_info = f'request_id={responses.request_id}' + '\n' + f'code={responses.status_code}' + '\n' + f'message={responses.message}'
+          return json.dumps({ "type": "error", "delta": error_info })
+      else:
+          print("responses: ", responses.output.text)
+          return json.dumps({ "type": "message", "delta": responses.output.text })
   except Exception as e:
     error_info = f"[系统异常] {str(e)}\n"
-    print(error_info)
-    yield error_info
+    if debug:
+        print(error_info)
+    return json.dumps({ "type": "error", "delta": error_info })
