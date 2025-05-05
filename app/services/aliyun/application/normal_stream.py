@@ -24,12 +24,12 @@ def normal_stream_generator(
       )
       if responses.status_code != HTTPStatus.OK:
           error_info = f'request_id={responses.request_id}' + '\n' + f'code={responses.status_code}' + '\n' + f'message={responses.message}'
-          return json.dumps({ "type": "error", "delta": error_info })
+          return { "type": "error", "delta": error_info }
       else:
           print("responses: ", responses.output.text)
-          return json.dumps({ "type": "message", "delta": responses.output.text })
+          return { "type": "message", "delta": responses.output.text }
   except Exception as e:
     error_info = f"[系统异常] {str(e)}\n"
     if debug:
         print(error_info)
-    return json.dumps({ "type": "error", "delta": error_info })
+    return { "type": "error", "delta": error_info }

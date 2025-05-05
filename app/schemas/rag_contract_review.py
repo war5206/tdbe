@@ -5,4 +5,5 @@ class RagContractReviewRequest(BaseModel):
     file: str
 
 class RagContractReviewResponse(BaseModel):
-    text: str
+    type: str
+    delta: str | dict[str, str] | list[dict[str, str]] | None = None
