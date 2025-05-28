@@ -1,31 +1,3 @@
-fastapi_project/
-│── app/
-│   ├── api/
-│   │   ├── v1/
-│   │   │   ├── endpoints/
-│   │   │   │   ├── user.py               # 只负责接收 HTTP 请求并调用 service
-│   │   │   ├── __init__.py
-│   ├── services/                          # 业务逻辑层
-│   │   ├── user.py                        # 用户相关业务逻辑
-│   │   ├── __init__.py
-│   ├── repositories/                      # 数据库访问层
-│   │   ├── user.py                        # 处理数据库操作
-│   │   ├── __init__.py
-│   ├── utils/                              # 工具类，比如加密、发送邮件
-│   │   ├── security.py                     # 密码加密
-│   │   ├── email.py                        # 发送邮件
-│   │   ├── __init__.py
-│   ├── dependencies/                       # 依赖项
-│   │   ├── database.py                     # 数据库连接
-│   │   ├── __init__.py
-│   ├── schemas/                            # Pydantic 模型
-│   │   ├── user.py
-│   │   ├── __init__.py
-│   ├── models/                             # SQLAlchemy 数据表
-│   │   ├── user.py
-│   │   ├── __init__.py
-│── main.py                                 # FastAPI 主入口
-
 # Pipenv
 
 **Pipenv** 是 Python 的依赖管理和虚拟环境工具，它将 `pip` 和 `virtualenv` 的功能整合在一起，并引入了类似 npm 的依赖锁机制（`Pipfile.lock`）。以下是详细说明和 FastAPI 的安装示例：

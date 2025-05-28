@@ -112,55 +112,66 @@ async def rag_contract_review(
     return stream()
 
 # 进行合同评审（第二次及以上）
-@router.post("/continual-review ")
-async def rag_contract_review(
-    user_prompt: str = Form(..., description="用户提示词"),
-    user_id: int = Form(..., description="用户-ID"),
-    agent_id: int = Form(..., description="AI-Agent-ID"),
-    session_id: int = Form(..., description="会话-ID"),
-    db: Session = Depends(get_db)
+@router.post("/multi-review")
+async def multi_review(
+    user_prompt: str    = Form(...),
+    user_id:       int  = Form(...),
+    agent_id:      int  = Form(...),
+    session_id:    int  = Form(...),
+    db:            Session = Depends(get_db)
 ):
-    message_list = message_service.get_messages_by_session(db, session_id)
+    # 1) 拿历史 ORM
+    records = message_service.get_messages_by_session(db, session_id)
 
-    message_index = len(message_list) + 1
+    # 2) 转成 AliyunModelMsg，并安全解析 content
+    from json import loads, JSONDecodeError
+    msgs: list[AliyunModelMsg] = []
+    for rec in records:
+        raw = rec.content
+        try:
+            obj = loads(raw)
+            delta = obj.get("delta", raw)
+        except JSONDecodeError:
+            delta = raw
 
-    user_msg_payload = ChatMessageCreate(
-        session_id=session_id,
-        message_index=message_index,
-        role="user",
-        type="message",
-        content=user_prompt,
-        reasoning_content=''
+        role_str = rec.role.value if hasattr(rec.role, "value") else rec.role
+        msgs.append(AliyunModelMsg(role=role_str, content=delta))
+
+    # 3) 存用户新消息
+    next_idx = len(records) + 1
+    user_msg = ChatMessageCreate(
+        session_id    = session_id,
+        message_index = next_idx,
+        role          = "user",
+        type          = "message",
+        content       = user_prompt
+    )
+    message_service.create_message(db, **user_msg.model_dump())
+
+    # 4) append 到流里
+    msgs.append(AliyunModelMsg(role="user", content=user_prompt))
+
+    # 5) 调用流式生成器
+    full = normal_stream_generator(
+        contract_api_key=contract_api_key,
+        app_id          = app_id,
+        pipeline_ids    = pipeline_ids,
+        messages        = msgs,
+        debug           = True
     )
 
-    message_service.create_message(db, **user_msg_payload.model_dump())
+    # 6) 存 AI 回复
+    from json import dumps
+    resp_text = dumps(full, ensure_ascii=False)
+    ai_msg = ChatMessageCreate(
+        session_id    = session_id,
+        message_index = next_idx + 1,
+        role          = "assistant",
+        type          = "message",
+        content       = resp_text
+    )
+    message_service.create_message(db, **ai_msg.model_dump())
 
-    message_list.append({"type": "user"}) # chat_messages表的user和assistant的content字段不一致，需修改
-
-    def stream():
-        full_response = normal_stream_generator(
-            contract_api_key=contract_api_key, 
-            app_id=app_id,
-            pipeline_ids=pipeline_ids,
-            messages=messages,
-            debug=True
-        )
-
-        response_text: str = json.dumps(full_response, ensure_ascii=False)
-
-        # 保存 AI 回复（type=message）
-        ai_msg_payload = ChatMessageCreate(
-            session_id=session_id,
-            message_index=index,
-            role="assistant",
-            type="message",
-            content=response_text
-        )
-
-        message_service.create_message(db, **ai_msg_payload.model_dump())
-
-        full_response['session_id'] = session_id
-
-        return full_response
-
-    return stream()
+    # 7) 带 session_id 返回
+    full["session_id"] = session_id
+    return full
