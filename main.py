@@ -15,7 +15,3 @@ app.add_middleware(
     allow_headers=["*"],    # 允许所有 headers
 )
 app.include_router(api_router, prefix="/api/v1", tags=["v1"])
-
-# from app.database import engine
-# from app.models import Base
-# Base.metadata.create_all(bind=engine) # 自动建表
