@@ -18,5 +18,5 @@ cryptography = "*"
 uvicorn = "*"
 
 [requires]
-python_version = "3.12"
-python_full_version = "3.12.4"
+python_version = "3.9.19"
+python_full_version = "3.9.19"
