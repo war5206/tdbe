@@ -92,7 +92,7 @@ async def rag_contract_review(
             debug=True
         )
 
-        response_text: str = json.dumps(full_response, ensure_ascii=False)
+        delta_text = full_response.get("delta", "")
 
         # 保存 AI 回复（type=message）
         ai_msg_payload = ChatMessageCreate(
@@ -100,7 +100,7 @@ async def rag_contract_review(
             message_index=index,
             role="assistant",
             type="message",
-            content=response_text
+            content=delta_text
         )
 
         message_service.create_message(db, **ai_msg_payload.model_dump())
@@ -161,14 +161,13 @@ async def multi_review(
     )
 
     # 6) 存 AI 回复
-    from json import dumps
-    resp_text = dumps(full, ensure_ascii=False)
+    delta_text = full.get("delta", "")
     ai_msg = ChatMessageCreate(
         session_id    = session_id,
         message_index = next_idx + 1,
         role          = "assistant",
         type          = "message",
-        content       = resp_text
+        content       = delta_text
     )
     message_service.create_message(db, **ai_msg.model_dump())
 
