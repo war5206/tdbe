@@ -5,7 +5,7 @@ import nls
 import json
 
 URL="wss://nls-gateway-cn-shanghai.aliyuncs.com/ws/v1"
-TOKEN="8c99bb300db8429b98e67ca97590986e"   #参考https://help.aliyun.com/document_detail/450255.html获取token
+TOKEN="874b3a6cb121482d848491621bdef2cc"   #参考https://help.aliyun.com/document_detail/450255.html获取token
 APPKEY="shDZg8nfPpbGGO3R"      #获取Appkey请前往控制台：https://nls-portal.console.aliyun.com/applist
 
 class AliRecognizer:
